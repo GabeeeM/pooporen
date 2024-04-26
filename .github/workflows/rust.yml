@@ -15,7 +15,7 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: nightly
-        profile: default
+        profile: minimal
         override: true
 
     - name: Set up MSVC toolchain
