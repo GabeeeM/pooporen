@@ -217,12 +217,12 @@ const MENU_BG: Color = Color::Rgba(0.1, 0.12, 0.12, 1.0);
 /// Distance at which nametags are visible for group members
 const NAMETAG_GROUP_RANGE: f32 = 5000.0;
 /// Distance at which nametags are visible
-const NAMETAG_RANGE: f32 = 120.0;
+const NAMETAG_RANGE: f32 = 100.0;
 /// Time nametags stay visible after doing damage even if they are out of range
 /// in seconds
 const NAMETAG_DMG_TIME: f32 = 60.0;
 /// Range damaged triggered nametags can be seen
-const NAMETAG_DMG_RANGE: f32 = 120.0;
+const NAMETAG_DMG_RANGE: f32 = 500.0;
 /// Range to display speech-bubbles at
 const SPEECH_BUBBLE_RANGE: f32 = NAMETAG_RANGE;
 const EXP_FLOATER_LIFETIME: f32 = 2.0;
@@ -2370,7 +2370,7 @@ impl Hud {
                                 || health.map_or(true, overhead::should_show_healthbar))
                             && is_rider
                                 .map_or(true, |is_rider| Some(&is_rider.mount) != uids.get(me))
-                            && (info.target_entity.map_or(false, |e| e == entity)
+                            && (info.target_entity.map_or(true, |e| e == entity)
                                 || info.selected_entity.map_or(false, |s| s.0 == entity)
                                 || health.map_or(true, overhead::should_show_healthbar)
                                 || in_group)
