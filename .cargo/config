@@ -3,11 +3,11 @@ rustflags = [
     "-C", "link-arg=-fuse-ld=gold",
 ]
 
+
+
 [target.x86_64-pc-windows-gnu]
-rustflags = [
-    # Required for mimalloc
-    "-C", "link-arg=-lpsapi",
-]
+linker = "x86_64-w64-mingw32-gcc"
+
 
 [alias]
 # tools
