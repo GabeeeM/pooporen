@@ -1,23 +1,33 @@
-name: FART
+name: POOPY
 
 on:
-  workflow_dispatch:  # This allows manual triggering of the workflow
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Switched to Ubuntu for cross-compilation
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     
-    # Setup Rust with Windows target
+    # Set up Rust with the specific target for cross-compilation
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
-        target: x86_64-pc-windows-gnu  # Target for Windows
+        target: x86_64-pc-windows-gnu
+        profile: minimal
+        override: true
+
+    # Add the target platform to Rust toolchain
+    - name: Add Windows GNU target
+      run: rustup target add x86_64-pc-windows-gnu
+
+    # Optionally build standard library if needed
+    - name: Build standard library for target
+      run: cargo build -Zbuild-std --target x86_64-pc-windows-gnu
 
     # Install cross-compilation tools
     - name: Install mingw-w64
@@ -31,5 +41,5 @@ jobs:
     - name: Upload Executable as Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: Pooper  # Name of the artifact
-        path: target/x86_64-pc-windows-gnu/release/*.exe  # Path adjusted for cross-compilation
+        name: Pooper
+        path: target/x86_64-pc-windows-gnu/release/*.exe
