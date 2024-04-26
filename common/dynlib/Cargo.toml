@@ -1,0 +1,11 @@
+[package]
+name = "veloren-common-dynlib"
+version = "0.1.0"
+authors = ["Ben Wallis <atomyc@gmail.com>"]
+edition = "2021"
+
+[dependencies]
+find_folder = {version = "0.3.0"}
+libloading = {version = "0.8"}
+notify = {version = "6.1.0"}
+tracing = { workspace = true }

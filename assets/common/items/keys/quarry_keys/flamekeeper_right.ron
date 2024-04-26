@@ -1,0 +1,10 @@
+ItemDef(
+    legacy_name: "Right Goggle-Glass",
+    legacy_description: "Looks like it could open a door...",
+    kind: Utility(
+        kind: Key,
+    ),
+    quality: High,
+    tags: [],
+)
+
