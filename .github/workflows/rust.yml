@@ -12,30 +12,23 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    # Set up Rust with the specific target for cross-compilation
-    - name: Install Rust toolchain
+    # Set up Rust with the nightly toolchain and specific target for cross-compilation
+    - name: Install Rust toolchain (nightly)
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: stable
+        toolchain: nightly
         target: x86_64-pc-windows-gnu
         profile: minimal
         override: true
-
-    # Add the target platform to Rust toolchain
-    - name: Add Windows GNU target
-      run: rustup target add x86_64-pc-windows-gnu
-
-    # Optionally build standard library if needed
-    - name: Build standard library for target
-      run: cargo build -Zbuild-std --target x86_64-pc-windows-gnu
+        components: rust-src, rustc, cargo
 
     # Install cross-compilation tools
     - name: Install mingw-w64
       run: sudo apt-get update && sudo apt-get install -y mingw-w64
 
-    # Build the project targeting Windows
-    - name: Build for Windows
-      run: cargo build --release --target x86_64-pc-windows-gnu
+    # Build the project targeting Windows including the standard library
+    - name: Build for Windows with standard library
+      run: cargo build -Zbuild-std --release --target x86_64-pc-windows-gnu
 
     # Upload the Windows executable as an artifact
     - name: Upload Executable as Artifact
