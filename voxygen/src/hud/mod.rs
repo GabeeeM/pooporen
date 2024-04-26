@@ -110,6 +110,7 @@ use common::{
     outcome::Outcome,
     resources::{ProgramTime, Secs, Time},
     slowjob::SlowJobPool,
+    states::glide::TOO_FAST,
     terrain::{SpriteKind, TerrainChunk, UnlockKind},
     trade::{ReducedInventory, TradeAction},
     uid::Uid,
@@ -214,9 +215,9 @@ const MENU_BG: Color = Color::Rgba(0.1, 0.12, 0.12, 1.0);
 //const UI_DARK_0: Color = Color::Rgba(0.25, 0.37, 0.37, 1.0);
 
 /// Distance at which nametags are visible for group members
-const NAMETAG_GROUP_RANGE: f32 = 1000.0;
+const NAMETAG_GROUP_RANGE: f32 = 5000.0;
 /// Distance at which nametags are visible
-const NAMETAG_RANGE: f32 = 40.0;
+const NAMETAG_RANGE: f32 = 120.0;
 /// Time nametags stay visible after doing damage even if they are out of range
 /// in seconds
 const NAMETAG_DMG_TIME: f32 = 60.0;
@@ -2725,6 +2726,13 @@ impl Hud {
                         velocity.z,
                         velocity.magnitude()
                     );
+                    if velocity.magnitude() > 39.7 {
+                        let mut too_fast = TOO_FAST.lock().unwrap();
+                        *too_fast = true;
+                    } else {
+                        let mut too_fast = TOO_FAST.lock().unwrap();
+                        *too_fast = false;
+                    }
                     let horizontal_velocity = velocity.xy().magnitude();
                     let dz = velocity.z;
                     // don't divide by zero

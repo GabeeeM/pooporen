@@ -29,6 +29,7 @@ serde = { workspace = true, features = ["rc"] }
 # Util
 enum-map = { workspace = true, features = ["serde"] }
 vek = { workspace = true }
+once_cell = "1.19.0"
 chrono = { workspace = true }
 chrono-tz = { workspace = true }
 itertools = { workspace = true }

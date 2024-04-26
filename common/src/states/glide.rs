@@ -2,7 +2,7 @@ use super::utils::*;
 use crate::{
     comp::{
         character_state::OutputEvents, fluid_dynamics::angle_of_attack, inventory::slot::EquipSlot,
-        CharacterState, Ori, StateUpdate, Vel,
+        CharacterState, InputKind, Ori, StateUpdate, Vel,
     },
     event::LocalEvent,
     outcome::Outcome,
@@ -12,8 +12,13 @@ use crate::{
     },
     util::{Dir, Plane, Projection},
 };
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::{f32::consts::PI, time::Duration};
+use std::{
+    f32::consts::PI,
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 use vek::*;
 
 const PITCH_SLOW_TIME: f32 = 0.5;
@@ -83,6 +88,9 @@ impl Data {
             .look_dir()
     }
 }
+
+pub static TOO_FAST: Lazy<Arc<Mutex<bool>>> = Lazy::new(|| Arc::new(Mutex::new(false)));
+static mut BOOST: bool = false;
 
 impl CharacterBehavior for Data {
     fn behavior(&self, data: &JoinData, output_events: &mut OutputEvents) -> StateUpdate {
@@ -215,6 +223,28 @@ impl CharacterBehavior for Data {
                     slerp_s,
                 )
             };
+
+            //test!
+            //epic boost haxxorz
+            if input_is_pressed(data, InputKind::Roll) {
+                unsafe { BOOST = !BOOST };
+            }
+
+            if unsafe { BOOST } {
+                let too_fast = TOO_FAST.lock().unwrap();
+
+                if !*too_fast {
+                    if data.physics.on_ground.is_some() {
+                        // quality of life hack: help with starting
+                        //
+                        // other velocities are intentionally ignored
+                        update.vel.0.z += 500.0 * data.dt.0;
+                    } else {
+                        update.vel.0.x *= 1.0 + 1.0 * data.dt.0;
+                        update.vel.0.y *= 1.0 + 1.0 * data.dt.0;
+                    }
+                }
+            }
 
             // If we gained a booster
             if let Some(booster) = gained_booster {

@@ -1,4 +1,3 @@
-#![deny(unsafe_code)]
 #![allow(incomplete_features)]
 #![type_length_limit = "1664759"]
 #![allow(clippy::option_map_unit_fn)]

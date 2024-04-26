@@ -61,7 +61,7 @@ impl Default for GraphicsSettings {
             max_fps: Fps::Max(60),
             max_background_fps: Fps::Max(30),
             fov: 70,
-            gamma: 1.0,
+            gamma: 0.2,
             exposure: 1.0,
             ambiance: 0.5,
             render_mode: RenderMode::default(),
