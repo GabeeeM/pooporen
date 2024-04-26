@@ -14,16 +14,22 @@ jobs:
     - name: Install Rust toolchain
       uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly
+        toolchain: 1.76.0
         target: x86_64-pc-windows-gnu
         profile: minimal
         override: true
+        components: rustfmt, clippy  # Optional: add components if you need them
 
     - name: Install MinGW-w64
       run: |
         sudo apt update
         sudo apt install -y mingw-w64
-        
+
+    - name: Configure Cargo for cross-compilation
+      run: |
+        echo "[target.x86_64-pc-windows-gnu]" >> $HOME/.cargo/config.toml
+        echo "linker = 'x86_64-w64-mingw32-gcc'" >> $HOME/.cargo/config.toml
+
     - name: Build the project
       run: cargo build --release --target x86_64-pc-windows-gnu
 
