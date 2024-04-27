@@ -2738,12 +2738,22 @@ impl Hud {
 
                     let cap = CAP.lock().unwrap();
 
-                    if velocity.magnitude() > 39.7 && *cap {
-                        let mut too_fast = TOO_FAST.lock().unwrap();
-                        *too_fast = true;
+                    if !*cap {
+                        if velocity.magnitude() > 22.3 {
+                            let mut too_fast = TOO_FAST.lock().unwrap();
+                            *too_fast = true;
+                        } else {
+                            let mut too_fast = TOO_FAST.lock().unwrap();
+                            *too_fast = false;
+                        }
                     } else {
-                        let mut too_fast = TOO_FAST.lock().unwrap();
-                        *too_fast = false;
+                        if velocity.magnitude() > 55.4 {
+                            let mut too_fast = TOO_FAST.lock().unwrap();
+                            *too_fast = true;
+                        } else {
+                            let mut too_fast = TOO_FAST.lock().unwrap();
+                            *too_fast = false;
+                        }
                     }
                     let horizontal_velocity = velocity.xy().magnitude();
                     let dz = velocity.z;
