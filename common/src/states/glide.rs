@@ -90,7 +90,8 @@ impl Data {
 }
 
 pub static TOO_FAST: Lazy<Arc<Mutex<bool>>> = Lazy::new(|| Arc::new(Mutex::new(false)));
-static mut BOOST: bool = false;
+pub static BOOST: Lazy<Arc<Mutex<bool>>> = Lazy::new(|| Arc::new(Mutex::new(false)));
+pub static CAP: Lazy<Arc<Mutex<bool>>> = Lazy::new(|| Arc::new(Mutex::new(true)));
 
 impl CharacterBehavior for Data {
     fn behavior(&self, data: &JoinData, output_events: &mut OutputEvents) -> StateUpdate {
@@ -227,10 +228,15 @@ impl CharacterBehavior for Data {
             //test!
             //epic boost haxxorz
             if input_is_pressed(data, InputKind::Roll) {
-                unsafe { BOOST = !BOOST };
+                let mut cap = CAP.lock().unwrap();
+                *cap = false;
+            } else {
+                let mut cap = CAP.lock().unwrap();
+                *cap = true;
             }
 
-            if unsafe { BOOST } {
+            let boost = BOOST.lock().unwrap();
+            if *boost {
                 let too_fast = TOO_FAST.lock().unwrap();
 
                 if !*too_fast {
