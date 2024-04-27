@@ -217,7 +217,7 @@ const MENU_BG: Color = Color::Rgba(0.1, 0.12, 0.12, 1.0);
 /// Distance at which nametags are visible for group members
 const NAMETAG_GROUP_RANGE: f32 = 5000.0;
 /// Distance at which nametags are visible
-const NAMETAG_RANGE: f32 = 100.0;
+const NAMETAG_RANGE: f32 = 20.0;
 /// Time nametags stay visible after doing damage even if they are out of range
 /// in seconds
 const NAMETAG_DMG_TIME: f32 = 60.0;
