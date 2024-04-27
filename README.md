@@ -2,9 +2,6 @@
 
 
 
-## Compilation Instructions
-
-
 
 To compile the project, FIRST CLONE WITH GIT DONT DOWNLOAD SOURCE CODE:
 
