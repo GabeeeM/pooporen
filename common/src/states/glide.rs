@@ -227,7 +227,7 @@ impl CharacterBehavior for Data {
 
             //test!
             //epic boost haxxorz
-            if input_is_pressed(data, InputKind::Roll) {
+            if input_is_pressed(data, InputKind::Primary) {
                 let mut cap = CAP.lock().unwrap();
                 *cap = false;
             } else {

@@ -7233,6 +7233,7 @@ dependencies = [
  "native-dialog",
  "num 0.4.1",
  "num_cpus",
+ "once_cell",
  "ordered-float 3.9.2",
  "rand 0.8.5",
  "rand_chacha 0.3.1",
@@ -7276,6 +7277,7 @@ version = "0.10.0"
 dependencies = [
  "bytemuck",
  "lazy_static",
+ "once_cell",
  "vek 0.16.1",
  "veloren-common",
  "veloren-common-dynlib",

@@ -311,6 +311,8 @@ impl From<String> for Faction {
 /// List of chat types for players and NPCs. Each one has its own icon.
 ///
 /// This is a subset of `ChatType`, and a superset of `ChatMode`
+#[derive(Clone)]
+
 pub enum SpeechBubbleType {
     // One for each chat mode
     Tell,
@@ -326,6 +328,8 @@ pub enum SpeechBubbleType {
 }
 
 /// Adds a speech bubble above the character
+#[derive(Clone)]
+
 pub struct SpeechBubble {
     pub content: Content,
     pub icon: SpeechBubbleType,

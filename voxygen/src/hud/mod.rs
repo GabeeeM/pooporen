@@ -30,6 +30,9 @@ pub mod util;
 
 pub use crafting::CraftingTab;
 pub use hotbar::{SlotContents as HotbarSlotContents, State as HotbarState};
+use iced::futures::future::Lazy;
+use once_cell::sync;
+
 pub use item_imgs::animate_by_pulse;
 pub use loot_scroller::LootMessage;
 pub use settings_window::ScaleChange;
@@ -62,12 +65,12 @@ use trade::Trade;
 
 use crate::{
     cmd::get_player_uuid,
-    ecs::{
-        comp as vcomp,
-        comp::{HpFloater, HpFloaterList},
-    },
+    ecs::comp::{self as vcomp, HpFloater, HpFloaterList},
     game_input::GameInput,
-    hud::{img_ids::ImgsRot, prompt_dialog::DialogOutcomeEvent},
+    hud::{
+        img_ids::ImgsRot, overhead::Overhead, overitem::OveritemProperties,
+        prompt_dialog::DialogOutcomeEvent,
+    },
     render::UiDrawer,
     scene::camera::{self, Camera},
     session::{
@@ -78,7 +81,10 @@ use crate::{
     },
     settings::chat::ChatFilter,
     ui::{
-        fonts::Fonts, img_ids::Rotations, slot, slot::SlotKey, Graphic, Ingameable, ScaleMode, Ui,
+        fonts::Fonts,
+        img_ids::Rotations,
+        slot::{self, SlotKey},
+        Graphic, Ingameable, ScaleMode, Ui,
     },
     window::Event as WinEvent,
     GlobalState,
@@ -102,7 +108,7 @@ use common::{
         loot_owner::LootOwnerKind,
         pet::is_mountable,
         skillset::{skills::Skill, SkillGroupKind, SkillsPersistenceError},
-        BuffData, BuffKind, Health, Item, MapMarkerChange, PickupItem, PresenceKind,
+        BuffData, BuffKind, Health, Item, MapMarkerChange, PickupItem, PresenceKind, SpeechBubble,
     },
     consts::MAX_PICKUP_RANGE,
     link::Is,
@@ -111,7 +117,7 @@ use common::{
     resources::{ProgramTime, Secs, Time},
     slowjob::SlowJobPool,
     states::glide::{BOOST, CAP, TOO_FAST},
-    terrain::{SpriteKind, TerrainChunk, UnlockKind},
+    terrain::{Block, BlockKind, SpriteKind, TerrainChunk, UnlockKind},
     trade::{ReducedInventory, TradeAction},
     uid::Uid,
     util::{srgba_to_linear, Dir},
@@ -135,7 +141,7 @@ use std::{
     borrow::Cow,
     cmp::Ordering,
     collections::VecDeque,
-    sync::Arc,
+    sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
 use tracing::warn;
@@ -224,7 +230,7 @@ const NAMETAG_DMG_TIME: f32 = 60.0;
 /// Range damaged triggered nametags can be seen
 const NAMETAG_DMG_RANGE: f32 = 500.0;
 /// Range to display speech-bubbles at
-const SPEECH_BUBBLE_RANGE: f32 = NAMETAG_RANGE;
+const SPEECH_BUBBLE_RANGE: f32 = 5000.0;
 const EXP_FLOATER_LIFETIME: f32 = 2.0;
 const EXP_ACCUMULATION_DURATION: f32 = 0.5;
 
@@ -1299,6 +1305,10 @@ pub struct Hud {
     force_chat: bool,
 }
 
+pub static INTERACTABLE_VEC: once_cell::sync::Lazy<
+    Arc<Mutex<Vec<(Block, VolumePos, SpeechBubble, BlockInteraction)>>>,
+> = once_cell::sync::Lazy::new(|| Arc::new(Mutex::new(vec![])));
+
 impl Hud {
     pub fn new(global_state: &mut GlobalState, client: &Client) -> Self {
         let window = &mut global_state.window;
@@ -1992,6 +2002,60 @@ impl Hud {
             let mut sct_bg_walker = self.ids.sct_bgs.walk();
             let pulse = self.pulse;
 
+            let guard = INTERACTABLE_VEC.lock().unwrap();
+            for (poo_block, poo_vol_pos, bubble, poo_int) in guard.iter() {
+                let overhead_id = overhead_walker.next(
+                    &mut self.ids.overheads,
+                    &mut ui_widgets.widget_id_generator(),
+                );
+
+            if let Some(Interactable::Block(block, pos, interaction)) = interactable
+                && let Some((mat, _, _)) = pos.get_block_and_transform(
+                    &ecs.read_resource(),
+                    &ecs.read_resource(),
+                    |e| {
+                        ecs.read_storage::<vcomp::Interpolated>()
+                            .get(e)
+                            .map(|interpolated| (comp::Pos(interpolated.pos),
+            interpolated.ori))         },
+                    &ecs.read_storage(),
+                )
+            {
+            let jos = mat.mul_point(Vec3::broadcast(0.5));
+            let over_jos = poo_pos + Vec3::unit_z() * 0.7;
+
+                if let Some((gyatt, _, _)) = poo_vol_pos.get_block_and_transform(
+                    &ecs.read_resource(),
+                    &ecs.read_resource(),
+                    |e| {
+                        ecs.read_storage::<vcomp::Interpolated>()
+                            .get(e)
+                            .map(|interpolated| (comp::Pos(interpolated.pos),
+            interpolated.ori))         },
+                    &ecs.read_storage(),
+                ) {
+                    let jos = gyatt.mul_point(Vec3::broadcast(0.5));
+
+                    overhead::Overhead::new(
+                        None,
+                        Some(&bubble),
+                        false,
+                        &global_state.settings.interface,
+                        self.pulse,
+                        i18n,
+                        &global_state.settings.controls,
+                        &self.imgs,
+                        &self.fonts,
+                        &global_state.window.key_layout,
+                        Vec::new(),
+                        &time,
+                    )
+                    .x_y(0.0, 100.0)
+                    .position_ingame(jos)
+                    .set(overhead_id, ui_widgets);
+                }
+            }
+
             let make_overitem =
                 |item: &PickupItem, pos, distance, properties, fonts, interaction_options| {
                     let quality = get_quality_col(item.item());
@@ -2513,7 +2577,6 @@ impl Hud {
                     },
                     &time,
                 )
-                .x_y(0.0, 100.0)
                 .position_ingame(ingame_pos)
                 .set(overhead_id, ui_widgets);
 
@@ -2747,7 +2810,7 @@ impl Hud {
                             *too_fast = false;
                         }
                     } else {
-                        if velocity.magnitude() > 55.4 {
+                        if velocity.magnitude() > 63.6 {
                             let mut too_fast = TOO_FAST.lock().unwrap();
                             *too_fast = true;
                         } else {

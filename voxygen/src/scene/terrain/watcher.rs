@@ -1,11 +1,19 @@
-use crate::hud::CraftingTab;
+use std::time::{Duration, Instant};
+
+use crate::{
+    hud::{CraftingTab, INTERACTABLE_VEC},
+    session::interactable::BlockInteraction,
+};
 use common::{
+    comp::{SpeechBubble, SpeechBubbleType},
+    mounting::VolumePos,
     terrain::{sprite, Block, BlockKind, SpriteKind},
     vol::ReadVol,
 };
 use common_base::span;
 use rand::prelude::*;
 use rand_chacha::ChaCha8Rng;
+use rayon::vec;
 use vek::*;
 
 #[derive(Clone, Copy, Debug)]
@@ -237,6 +245,31 @@ impl BlocksOfInterest {
             }
             if block.collectible_id().is_some() {
                 interactables.push((pos, Interaction::Collect));
+
+                if block.get_sprite() == Some(SpriteKind::Silver) {
+                    let mut poo = INTERACTABLE_VEC.lock().unwrap();
+                    // let loo = Vec3 {
+                    //     x: pos.x as f32,
+                    //     y: pos.y as f32,
+                    //     z: pos.z as f32,
+                    // };
+
+                    poo.push((
+                        block,
+                        VolumePos {
+                            kind: common::mounting::Volume::Terrain,
+                            pos,
+                        },
+                        SpeechBubble {
+                            content: common::comp::Content::Plain("Silver".to_string()),
+                            icon: SpeechBubbleType::World,
+                            timeout: Instant::now() + Duration::from_secs_f64(120.0),
+                        },
+                        BlockInteraction::Mine(common::comp::tool::ToolKind::Pick),
+                    ));
+
+                    // println!("There is a silver ore thing at {:?}", pos);
+                }
             }
             if let Some(glow) = block.get_glow() {
                 // Currently, we count filled blocks as 'minor' lights, and sprites as
