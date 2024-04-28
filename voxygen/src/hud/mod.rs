@@ -2002,59 +2002,59 @@ impl Hud {
             let mut sct_bg_walker = self.ids.sct_bgs.walk();
             let pulse = self.pulse;
 
-            let guard = INTERACTABLE_VEC.lock().unwrap();
-            for (poo_block, poo_vol_pos, bubble, poo_int) in guard.iter() {
-                let overhead_id = overhead_walker.next(
-                    &mut self.ids.overheads,
-                    &mut ui_widgets.widget_id_generator(),
-                );
+            // let guard = INTERACTABLE_VEC.lock().unwrap();
+            // for (poo_block, poo_vol_pos, bubble, poo_int) in guard.iter() {
+            //     let overhead_id = overhead_walker.next(
+            //         &mut self.ids.overheads,
+            //         &mut ui_widgets.widget_id_generator(),
+            //     );
 
-            if let Some(Interactable::Block(block, pos, interaction)) = interactable
-                && let Some((mat, _, _)) = pos.get_block_and_transform(
-                    &ecs.read_resource(),
-                    &ecs.read_resource(),
-                    |e| {
-                        ecs.read_storage::<vcomp::Interpolated>()
-                            .get(e)
-                            .map(|interpolated| (comp::Pos(interpolated.pos),
-            interpolated.ori))         },
-                    &ecs.read_storage(),
-                )
-            {
-            let jos = mat.mul_point(Vec3::broadcast(0.5));
-            let over_jos = poo_pos + Vec3::unit_z() * 0.7;
+            //     if let Some(Interactable::Block(block, pos, interaction)) = interactable
+            //         && let Some((mat, _, _)) = pos.get_block_and_transform(
+            //             &ecs.read_resource(),
+            //             &ecs.read_resource(),
+            //             |e| {
+            //                 ecs.read_storage::<vcomp::Interpolated>()
+            //                     .get(e)
+            //                     .map(|interpolated| (comp::Pos(interpolated.pos),
+            // interpolated.ori))             },
+            //             &ecs.read_storage(),
+            //         )
+            //     {
+            //         let jos = mat.mul_point(Vec3::broadcast(0.5));
+            //         let over_jos = poo_pos + Vec3::unit_z() * 0.7;
 
-                if let Some((gyatt, _, _)) = poo_vol_pos.get_block_and_transform(
-                    &ecs.read_resource(),
-                    &ecs.read_resource(),
-                    |e| {
-                        ecs.read_storage::<vcomp::Interpolated>()
-                            .get(e)
-                            .map(|interpolated| (comp::Pos(interpolated.pos),
-            interpolated.ori))         },
-                    &ecs.read_storage(),
-                ) {
-                    let jos = gyatt.mul_point(Vec3::broadcast(0.5));
+            //         if let Some((gyatt, _, _)) = poo_vol_pos.get_block_and_transform(
+            //             &ecs.read_resource(),
+            //             &ecs.read_resource(),
+            //             |e| {
+            //                 ecs.read_storage::<vcomp::Interpolated>()
+            //                     .get(e)
+            //                     .map(|interpolated| (comp::Pos(interpolated.pos),
+            // interpolated.ori))             },
+            //             &ecs.read_storage(),
+            //         ) {
+            //             let jos = gyatt.mul_point(Vec3::broadcast(0.5));
 
-                    overhead::Overhead::new(
-                        None,
-                        Some(&bubble),
-                        false,
-                        &global_state.settings.interface,
-                        self.pulse,
-                        i18n,
-                        &global_state.settings.controls,
-                        &self.imgs,
-                        &self.fonts,
-                        &global_state.window.key_layout,
-                        Vec::new(),
-                        &time,
-                    )
-                    .x_y(0.0, 100.0)
-                    .position_ingame(jos)
-                    .set(overhead_id, ui_widgets);
-                }
-            }
+            //             overhead::Overhead::new(
+            //                 None,
+            //                 Some(&bubble),
+            //                 false,
+            //                 &global_state.settings.interface,
+            //                 self.pulse,
+            //                 i18n,
+            //                 &global_state.settings.controls,
+            //                 &self.imgs,
+            //                 &self.fonts,
+            //                 &global_state.window.key_layout,
+            //                 Vec::new(),
+            //                 &time,
+            //             )
+            //             .x_y(0.0, 100.0)
+            //             .position_ingame(jos)
+            //             .set(overhead_id, ui_widgets);
+            //         }
+            //     }
 
             let make_overitem =
                 |item: &PickupItem, pos, distance, properties, fonts, interaction_options| {
@@ -2424,9 +2424,9 @@ impl Hud {
                         let is_me = entity == me;
                         let dist_sqr = pos.distance_squared(player_pos);
 
-                        // Determine whether to display nametag and healthbar based on whether the
-                        // entity is mounted, has been damaged, is targeted/selected, or is in your
-                        // group
+                        // Determine whether to display nametag and healthbar based on whether
+                        // the entity is mounted, has been damaged,
+                        // is targeted/selected, or is in your group
                         // Note: even if this passes the healthbar can
                         // be hidden in some cases if it is at maximum
                         let display_overhead_info = !is_me
@@ -2519,7 +2519,8 @@ impl Hud {
                     &self.fonts,
                     &global_state.window.key_layout,
                     match alignment {
-                        // TODO: Don't use `MAX_MOUNT_RANGE` here, add dedicated interaction range
+                        // TODO: Don't use `MAX_MOUNT_RANGE` here, add dedicated interaction
+                        // range
                         Some(comp::Alignment::Npc)
                             if dist_sqr < common::consts::MAX_MOUNT_RANGE.powi(2)
                                 && interactable.and_then(|i| i.entity()) == Some(entity) =>
@@ -4303,8 +4304,9 @@ impl Hud {
                         self.hotbar.get(h).map(|s| match s {
                             hotbar::SlotContents::Inventory(i, _) => {
                                 if let Some(inv) = inventories.get(info.viewpoint_entity) {
-                                    // If the item in the inactive main hand is the same as the item
-                                    // pressed in the hotbar, then swap active and inactive hands
+                                    // If the item in the inactive main hand is the same as the
+                                    // item pressed in
+                                    // the hotbar, then swap active and inactive hands
                                     // instead of looking for
                                     // the item in the inventory
                                     if inv
@@ -5088,16 +5090,16 @@ impl Hud {
 
     pub fn camera_clamp(&mut self, camera_clamp: bool) { self.show.camera_clamp = camera_clamp; }
 
-    /// Remind the player camera zoom is currently locked, for example if they
-    /// are trying to zoom.
+    /// Remind the player camera zoom is currently locked, for example if
+    /// they are trying to zoom.
     pub fn zoom_lock_reminder(&mut self) {
         if self.show.zoom_lock.reason.is_none() {
             self.show.zoom_lock = ChangeNotification::from_reason(NotificationReason::Remind);
         }
     }
 
-    /// Start showing a temporary notification ([ChangeNotification]) that zoom
-    /// lock was toggled on/off.
+    /// Start showing a temporary notification ([ChangeNotification]) that
+    /// zoom lock was toggled on/off.
     pub fn zoom_lock_toggle(&mut self, state: bool) {
         self.show.zoom_lock = ChangeNotification::from_state(state);
     }
@@ -5273,6 +5275,7 @@ impl Hud {
         }
     }
 }
+
 // Get item qualities of equipped items and assign a tooltip title/frame color
 pub fn get_quality_col<I: ItemDesc + ?Sized>(item: &I) -> Color {
     match item.quality() {
