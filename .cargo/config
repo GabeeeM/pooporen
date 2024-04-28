@@ -6,7 +6,10 @@ rustflags = [
 
 
 [target.x86_64-pc-windows-gnu]
-linker = "x86_64-w64-mingw32-gcc"
+rustflags = [
+    # Required for mimalloc
+    "-C", "link-arg=-lpsapi",
+]
 
 
 [alias]
