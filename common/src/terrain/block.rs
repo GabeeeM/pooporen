@@ -426,6 +426,7 @@ impl Block {
                 | SpriteKind::RubySmall
                 | SpriteKind::EmeraldSmall
                 | SpriteKind::SapphireSmall => 3,
+                SpriteKind::Silver | SpriteKind::Gold => 50,
                 SpriteKind::Lantern => 24,
                 SpriteKind::TerracottaStatue => 8,
                 SpriteKind::SeashellLantern | SpriteKind::GlowIceCrystal => 16,

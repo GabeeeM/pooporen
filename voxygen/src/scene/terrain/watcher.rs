@@ -1,9 +1,6 @@
 use std::time::{Duration, Instant};
 
-use crate::{
-    hud::{CraftingTab, INTERACTABLE_VEC},
-    session::interactable::BlockInteraction,
-};
+use crate::{hud::CraftingTab, session::interactable::BlockInteraction};
 use common::{
     comp::{SpeechBubble, SpeechBubbleType},
     mounting::VolumePos,
@@ -247,26 +244,32 @@ impl BlocksOfInterest {
                 interactables.push((pos, Interaction::Collect));
 
                 if block.get_sprite() == Some(SpriteKind::Silver) {
-                    let mut poo = INTERACTABLE_VEC.lock().unwrap();
-                    // let loo = Vec3 {
-                    //     x: pos.x as f32,
+
+                    // let mut poo: std::sync::MutexGuard<Vec<(Block, VolumePos,
+                    // SpeechBubble, BlockInteraction)>> =
+                    // INTERACTABLE_VEC.lock().unwrap(); let
+                    // loo = Vec3 {     x: pos.x as f32,
                     //     y: pos.y as f32,
                     //     z: pos.z as f32,
                     // };
 
-                    poo.push((
-                        block,
-                        VolumePos {
-                            kind: common::mounting::Volume::Terrain,
-                            pos,
-                        },
-                        SpeechBubble {
-                            content: common::comp::Content::Plain("Silver".to_string()),
-                            icon: SpeechBubbleType::World,
-                            timeout: Instant::now() + Duration::from_secs_f64(120.0),
-                        },
-                        BlockInteraction::Mine(common::comp::tool::ToolKind::Pick),
-                    ));
+                    // println!("silver ore at: {:?}", pos);
+
+                    // poo.push((
+                    //     block,
+                    //     VolumePos {
+                    //         kind: common::mounting::Volume::Terrain,
+                    //         pos,
+                    //     },
+                    //     SpeechBubble {
+                    //         content:
+                    // common::comp::Content::Plain("Silver".to_string()),
+                    //         icon: SpeechBubbleType::World,
+                    //         timeout: Instant::now() +
+                    // Duration::from_secs_f64(120.0),
+                    //     },
+                    //     BlockInteraction::Mine(common::comp::tool::ToolKind::Pick),
+                    // ));
 
                     // println!("There is a silver ore thing at {:?}", pos);
                 }

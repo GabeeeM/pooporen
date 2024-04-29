@@ -1305,9 +1305,9 @@ pub struct Hud {
     force_chat: bool,
 }
 
-pub static INTERACTABLE_VEC: once_cell::sync::Lazy<
-    Arc<Mutex<Vec<(Block, VolumePos, SpeechBubble, BlockInteraction)>>>,
-> = once_cell::sync::Lazy::new(|| Arc::new(Mutex::new(vec![])));
+// pub static INTERACTABLE_VEC: once_cell::sync::Lazy<
+//     Arc<Mutex<Vec<(Block, VolumePos, SpeechBubble, BlockInteraction)>>>,
+// > = once_cell::sync::Lazy::new(|| Arc::new(Mutex::new(vec![])));
 
 impl Hud {
     pub fn new(global_state: &mut GlobalState, client: &Client) -> Self {
